@@ -1,0 +1,17 @@
+
+* 소스코드.zip 		: 책 전체 SQL 코드 및 PHP 코드
+
+* cookDB.sql		: 5장. cookDB SQL 코드
+* employees.zip		: 1장. employees 데이터베이스 생성 파일
+* modelDB.mwb		: 3장. modelDB 데이터베이스 다이어그램 파일
+* modelDB.sql		: 3장. modelDB SQL 코드
+* Movies.zip 		: 7장. 영화 동영상 및 영화 대본 파일
+* my.ini.txt		: my.ini 파일 변경된 내용
+* mysql-installer-community-5.7.17.0.msi 	: 1장. 32bit용 MySQL
+* mysql-installer-community-8.0.3.0-rc.msi 	: 1장. 64bit Windows 7용 MySQL
+* mysql-installer-community-8.0.35.0.msi 	: 1장. 64bit Windows 10용 MySQL
+* npp.7.5.8.Installer.exe	: 13장. 노트패드플러스 설치 파일
+* result.csv		: 4장. CSV 저장 파일
+* sakila.mwb		: 3장. sakila 데이터베이스 다이어그램 파일
+* ShopDB.sql		: 2장. shopDB SQL 코드
+* xampp-win32-7.2.9-0-VC15-installer.exe 	: 14장. xampp 설치 파일
