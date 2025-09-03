@@ -1,5 +1,5 @@
 -- p.166 실수형 데이터가 있는 테이블 생성
-USE doitsql;
+USE doitsql_b;
 
 CREATE TABLE doit_float (col_1 FLOAT);
 
@@ -12,7 +12,7 @@ SELECT 10/3;
 
 
 -- 문자열 데이터의 길이와 크기 확인
-USE doitsql;
+USE doitsql_b;
 
 CREATE TABLE doit_char_varchar (
 col_1 CHAR(5),
@@ -34,7 +34,7 @@ SELECT
 FROM doit_char_varchar;
 
 -- p.172 저장 공간을 초과한 예
-USE doitsql;
+USE doitsql_b;
 
 -- 생성 성공
 CREATE TABLE doit_table_byte (
