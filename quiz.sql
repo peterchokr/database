@@ -1,3 +1,14 @@
+1. 'iPhone'으로 시작하는 모든 제품을 찾으세요.
+2. 이름에 'Pro'가 포함된 모든 제품을 찾으세요.
+3. 이름이 정확히 5글자인 제품을 찾으세요. 
+4.  SKU 코드의 네 번째 문자가 'T'인 제품을 찾으세요.
+
+
+
+
+
+
+
 CREATE TABLE products (
     product_id INT PRIMARY KEY,
     product_name VARCHAR(100),
