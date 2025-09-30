@@ -4,11 +4,6 @@
 4.  SKU 코드의 네 번째 문자가 'T'인 제품을 찾으세요.
 
 
-
-
-
-
-
 CREATE TABLE products (
     product_id INT PRIMARY KEY,
     product_name VARCHAR(100),
