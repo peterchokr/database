@@ -1,0 +1,9 @@
+INSERT INTO Products (name, price) VALUES 
+('프리미엄 무선 헤드폰', 150000.00),
+('친환경 스테인리스 텀블러', 25000.00),
+('초경량 접이식 우산', 18000.00);
+
+INSERT INTO Shipping (product_id, fee, method) VALUES 
+(1, 3000.00, '일반 택배'), -- product_id 1 (헤드폰) 배송비 3000원
+(2, 0.00, '일반 택배'),    -- product_id 2 (텀블러) 배송비 무료
+(3, 5000.00, '우체국 택배');-- product_id 3 (우산) 배송비 5000원
