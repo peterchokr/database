@@ -1,0 +1,8 @@
+drop trigger if exists trg_restore_stock_on_delete;
+delimiter %%;
+create trigger trg_restore_stock_on_delete
+....
+
+delimiter 끝에 ; 이 있었네요.
+이것만 삭제하면 되는 걸.
+수고했습니다.
