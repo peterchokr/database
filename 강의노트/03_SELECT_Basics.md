@@ -96,7 +96,7 @@ SELECT * FROM student ORDER BY gpa DESC;
 SELECT * FROM student 
 ORDER BY department ASC, gpa DESC;
 
-
+---
 
 ## 📚 Part 2: 샘플 데이터 설정
 
