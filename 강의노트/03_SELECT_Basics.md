@@ -95,6 +95,7 @@ SELECT * FROM student ORDER BY gpa DESC;
 -- 복수 열 정렬: 학과별 오름차순, 학점 내림차순
 SELECT * FROM student 
 ORDER BY department ASC, gpa DESC;
+```
 
 ---
 
