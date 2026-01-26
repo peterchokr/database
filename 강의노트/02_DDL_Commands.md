@@ -177,7 +177,7 @@ CREATE TABLE employee (
     dept_id INT,
     position VARCHAR(20),
     salary DECIMAL(10,2),
-    hire_date DATE DEFAULT CURDATE(),
+    hire_date DATE DEFAULT (CURDATE()),
     phone VARCHAR(15),
     FOREIGN KEY (dept_id) REFERENCES department(dept_id),
     CONSTRAINT check_salary CHECK (salary > 0)
@@ -201,7 +201,8 @@ INSERT INTO employee VALUES
 
 ### 이 부분에서 배우는 것
 
-이 섹션에서는 배운 DDL 명령어를 직접 실행하여 테이블을 만들고 수정해봅니다. CREATE TABLE을 사용하여 다양한 데이터타입과 제약조건을 적용하고, ALTER TABLE로 테이블 구조를 변경하는 실습을 하게 됩니다. 이를 통해 실제 데이터베이스 설계 능력을 기르게 됩니다.
+이 섹션에서는 배운 DDL 명령어를 직접 실행하여 테이블을 만들고 수정해봅니다.    
+CREATE TABLE을 사용하여 다양한 데이터타입과 제약조건을 적용하고, ALTER TABLE로 테이블 구조를 변경하는 실습을 하게 됩니다. 이를 통해 실제 데이터베이스 설계 능력을 기르게 됩니다.
 
 ### 3-1. 기본 테이블 생성 실습
 
@@ -214,7 +215,7 @@ CREATE TABLE customer (
     customer_name VARCHAR(30) NOT NULL,
     email VARCHAR(50) UNIQUE,
     phone VARCHAR(15),
-    signup_date DATE DEFAULT CURDATE()
+    signup_date DATE DEFAULT (CURDATE())
 ) CHARACTER SET utf8mb4;
 
 -- 확인
