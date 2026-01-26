@@ -119,7 +119,7 @@ CREATE TABLE employee (
     emp_name VARCHAR(30) NOT NULL,
     department VARCHAR(20),
     salary DECIMAL(10,2),
-    hire_date DATE DEFAULT CURDATE(),
+    hire_date DATE DEFAULT (CURDATE()),
     CHECK (salary > 0)
 ) CHARACTER SET utf8mb4;
 ```
