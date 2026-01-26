@@ -29,13 +29,12 @@ INNER JOIN으로 양쪽 테이블에 모두 존재하는 데이터를 조회하�
 ### 1-2. INNER JOIN
 
 INNER JOIN은 양쪽 테이블 모두에 존재하는 데이터만 조회합니다.    
-기본 문법    
 
+기본 문법    
 SELECT * FROM 테이블1    
 INNER JOIN 테이블2    
 ON 조건;   
 
-이는 두 테이블의 공통 부분만 결과로 반환합니다.
 
 ```mermaid
 graph TD
