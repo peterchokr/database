@@ -96,10 +96,7 @@ SELECT * FROM student ORDER BY gpa DESC;
 SELECT * FROM student 
 ORDER BY department ASC, gpa DESC;
 
--- NULL 처리
-SELECT * FROM student 
-ORDER BY phone IS NULL, phone;
-```
+
 
 ---
 
