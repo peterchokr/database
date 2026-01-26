@@ -98,8 +98,6 @@ ORDER BY department ASC, gpa DESC;
 
 
 
----
-
 ## 📚 Part 2: 샘플 데이터 설정
 
 ### 이 부분에서 배우는 것
