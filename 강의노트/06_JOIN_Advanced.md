@@ -17,8 +17,8 @@
 - Self Join (자기 자신과의 조인)
 - 여러 테이블의 JOIN (3개 이상)
 - JOIN 조건과 성능 고려사항
-- 
-- 예시. https://blog.naver.com/jadesea0816/223555667283
+  
+- 참고. https://blog.naver.com/jadesea0816/223555667283
 
 ---
 
