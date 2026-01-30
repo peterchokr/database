@@ -1,4 +1,4 @@
-# Chapter 13: 정규화 (Normalization)와 데이터베이스 설계
+# 13장. 정규화 (Normalization)와 데이터베이스 설계
 
 ## 📖 수업 개요
 
