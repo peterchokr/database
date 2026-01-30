@@ -40,6 +40,23 @@ WHERE column IN (SELECT ... )        -- WHERE 절
 
 ---
 
+```mermaid
+graph LR
+    A["서브쿼리"] --> B["WHERE<br/>서브쿼리"]
+    A --> C["FROM<br/>서브쿼리"]
+    A --> D["SELECT<br/>서브쿼리"]
+  
+    B --> B1["조건식에서<br/>값 비교"]
+    C --> C1["임시 테이블<br/>생성"]
+    D --> D1["SELECT 절에서<br/>값 계산"]
+  
+    style B1 fill:#e3f2fd
+    style C1 fill:#f3e5f5
+    style D1 fill:#fff3e0
+```
+---
+
+
 ### 8.2 단일 행 서브쿼리
 
 **단일 행 서브쿼리**는 정확히 하나의 행을 반환하는 서브쿼리입니다.
@@ -176,22 +193,7 @@ WHERE salary > (SELECT AVG(salary) FROM employees e2
                 WHERE e2.dept_id = e1.dept_id);
 ```
 
----
 
-```mermaid
-graph LR
-    A["서브쿼리"] --> B["WHERE<br/>서브쿼리"]
-    A --> C["FROM<br/>서브쿼리"]
-    A --> D["SELECT<br/>서브쿼리"]
-  
-    B --> B1["조건식에서<br/>값 비교"]
-    C --> C1["임시 테이블<br/>생성"]
-    D --> D1["SELECT 절에서<br/>값 계산"]
-  
-    style B1 fill:#e3f2fd
-    style C1 fill:#f3e5f5
-    style D1 fill:#fff3e0
-```
 
 ---
 
