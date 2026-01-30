@@ -102,16 +102,12 @@ graph TB
     A --> A2["+ employees 일치 데이터"]
     A --> A3["+ NULL (일치 없을 때)"]
   
-    B["FULL JOIN"] --> B1["employees의 모든 행"]
-    B --> B2["+ departments의 모든 행"]
-    B --> B3["+ NULL (양쪽 모두 일치 없을 때)"]
+
   
     style A1 fill:#fff3e0
     style A2 fill:#ffe0b2
     style A3 fill:#ffcdd2
-    style B1 fill:#f3e5f5
-    style B2 fill:#f3e5f5
-    style B3 fill:#ffcdd2
+
 ```
 
 ---
