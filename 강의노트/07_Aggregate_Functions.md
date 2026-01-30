@@ -176,10 +176,7 @@ GROUP BY category, color;   -- 카테고리, 색상별 재고 수량
 
 **HAVING**은 GROUP BY 결과에 조건을 적용하는 WHERE 역할을 합니다.
 
-**주요 차이:**
 
-- WHERE: GROUP BY 전에 행을 필터링
-- HAVING: GROUP BY 후에 그룹을 필터링
 
 **문법:**
 
