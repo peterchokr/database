@@ -130,6 +130,18 @@ FROM table1
 RIGHT JOIN table2 ON table1.key = table2.key;
 ```
 
+```mermaid
+graph TB
+ 
+    B["FULL JOIN"] --> B1["employees의 모든 행"]
+    B --> B2["+ departments의 모든 행"]
+    B --> B3["+ NULL (양쪽 모두 일치 없을 때)"]
+  
+    style B1 fill:#f3e5f5
+    style B2 fill:#f3e5f5
+    style B3 fill:#ffcdd2
+```
+
 ---
 
 ### 6.4 CROSS JOIN (교차 조인)
