@@ -87,6 +87,15 @@ ON table1.key = table2.key;
 - 왼쪽 테이블에서 일치하지 않는 경우 NULL로 표시
 - LEFT JOIN으로 테이블 순서를 바꾸어 같은 결과를 얻을 수 있음
 
+**예시:**
+
+```sql
+SELECT e.employee_id, e.name, d.department_name
+FROM employees e
+RIGHT JOIN departments d
+ON e.dept_id = d.dept_id;
+```
+
 ```mermaid
 graph TB
     A["RIGHT JOIN"] --> A1["departments의 모든 행"]
