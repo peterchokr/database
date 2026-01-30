@@ -1,4 +1,4 @@
-# Chapter 10: 뷰(View)와 저장프로시저(Stored Procedure)
+# 10장. 뷰(View)와 저장프로시저(Stored Procedure)
 
 ## 📖 수업 개요
 
