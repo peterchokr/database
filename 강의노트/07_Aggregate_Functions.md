@@ -1,4 +1,4 @@
-# Chapter 7: 집계함수 (Aggregate Functions)
+# 7장. 집계함수 (Aggregate Functions)
 
 ## 📖 수업 개요
 
