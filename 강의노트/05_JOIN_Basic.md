@@ -393,7 +393,7 @@ GROUP BY s.student_name;
 
 제출 형식: SQL 파일 (Ch5_JOIN_Practice_[학번].sql) 및 스크린샷
 
----
+
 
 
 
