@@ -137,9 +137,7 @@ FROM table_name
 GROUP BY column;
 ```
 
-**규칙:**
 
-- SELECT에 있는 그룹화되지 않은 열은 모두 GROUP BY에 포함되어야 함
 
 
 **예시:**
