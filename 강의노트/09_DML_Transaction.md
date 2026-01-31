@@ -349,17 +349,7 @@ COMMIT;
 -- 결과: 총 잔액은 변하지 않음! ✅ 일관성 유지됨
 ```
 
-#### 제약조건 확인
 
-데이터베이스는 일관성을 위해 모든 제약조건을 확인:
-
-```sql
--- 이 쿼리는 실패함 (일관성 위반)
-UPDATE employees SET dept_id = 999 WHERE employee_id = 1;
--- 오류: dept_id 999는 departments 테이블에 없음!
--- (외래키 제약조건 위반)
--- 자동으로 ROLLBACK됨 ❌
-```
 
 ### 왜 중요한가?
 
