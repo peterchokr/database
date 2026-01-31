@@ -716,7 +716,8 @@ START TRANSACTION;
   
 COMMIT;
 
--- 18. 행 잠금 (SELECT FOR UPDATE - 동시성 제어)
+-- 18. 행 잠금
+-- SELECT FOR UPDATE - 동시성 제어 : 쓰기 잠금(Write Lock/Exclusive Lock) 내가 이 데이터를 수정할 거니까, 내가 끝낼 때까지 아무도 손대지 마라고 선언
 START TRANSACTION;
   SELECT * FROM employees WHERE employee_id = 1 FOR UPDATE;
   UPDATE employees SET salary = 5500000 WHERE employee_id = 1;
