@@ -699,7 +699,7 @@ INSERT INTO employees (name, dept_id, salary)
 SELECT '신입직원', 1, 4100000
 WHERE NOT EXISTS (SELECT 1 FROM employees WHERE name = '신입직원');
 
--- 16. INSERT IGNORE (중복 무시)
+-- 16. INSERT IGNORE (에러가 발생해도 작업을 중단하지 말고 경고만 발생하고 넘어가라)
 INSERT IGNORE INTO employees (employee_id, name, dept_id, salary)
 VALUES (1, '김철수', 1, 5000000);
 
