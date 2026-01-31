@@ -155,15 +155,7 @@ SET salary = CASE
 END;
 ```
 
-### JOIN을 사용한 UPDATE
 
-```sql
--- 서울 지역 부서 직원만 급여 인상
-UPDATE employees e
-JOIN departments d ON e.dept_id = d.dept_id
-SET e.salary = e.salary * 1.1
-WHERE d.location = 'Seoul';
-```
 
 ---
 
