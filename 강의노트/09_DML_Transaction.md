@@ -465,24 +465,12 @@ ROLLBACK;  -- 삽입이 취소됨, 직원이 생성되지 않음
 ### 실제 사용 사례
 
 ```sql
--- 케이스 1: 성공적인 트랜잭션
+
 START TRANSACTION;
   UPDATE employees SET salary = 5500000 WHERE employee_id = 1;
   UPDATE employees SET dept_id = 2 WHERE employee_id = 1;
 COMMIT;  -- 두 변경사항이 모두 저장됨 ✅
 
--- 케이스 2: 오류가 발생한 트랜잭션
-START TRANSACTION;
-  INSERT INTO employees (name, dept_id, salary) 
-  VALUES ('New Employee', 99, 3500000);
-  -- 오류! dept_id 99는 존재하지 않음
-  
-  -- 다른 방법으로 시도
-  INSERT INTO employees (name, dept_id, salary) 
-  VALUES ('New Employee', 1, 3500000);
-  -- 이번엔 성공!
-  
-COMMIT;  -- 두 번째 삽입만 저장됨
 ```
 
 ---
