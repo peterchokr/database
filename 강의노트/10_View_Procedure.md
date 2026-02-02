@@ -134,6 +134,19 @@ UPDATE employee_view SET salary = 5000000 WHERE employee_id = 1;
 
 **저장프로시저**는 데이터베이스에 저장되는 재사용 가능한 SQL 루틴입니다.
 
+**생성:**
+
+```sql
+CREATE PROCEDURE procedure_name (
+  IN parameter1 INT,
+  OUT parameter2 VARCHAR(50)
+)
+BEGIN
+  -- 프로시저 본문
+  SELECT column INTO parameter2 FROM table WHERE id = parameter1;
+END;
+```
+
 **특징:**
 
 - 조건문, 반복문 포함 가능
@@ -150,18 +163,7 @@ UPDATE employee_view SET salary = 5000000 WHERE employee_id = 1;
 5. **네트워크 부하 감소** - 수십 줄의 SQL 코드를 서버로 보내는 대신, CALL procedure_name()이라는 짧은 한 줄만 보내면 되므로 네트워크 트래픽이 줄어듭니다.
 
 
-**생성:**
 
-```sql
-CREATE PROCEDURE procedure_name (
-  IN parameter1 INT,
-  OUT parameter2 VARCHAR(50)
-)
-BEGIN
-  -- 프로시저 본문
-  SELECT column INTO parameter2 FROM table WHERE id = parameter1;
-END;
-```
 
 ---
 
