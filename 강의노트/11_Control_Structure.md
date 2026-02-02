@@ -334,19 +334,22 @@ CREATE TABLE temp_table (
 -- =====================================================
 
 -- 1. 기본 IF-THEN (조건에 따른 처리)
+DELIMITER //
 CREATE PROCEDURE CheckSalary (IN emp_id INT)
 BEGIN
   DECLARE emp_salary DECIMAL;
   SELECT salary INTO emp_salary FROM employees WHERE employee_id = emp_id;
   
-  IF emp_salary > 5000000 THEN
+  IF emp_salary >= 5000000 THEN
     SELECT 'High salary' AS status;
   END IF;
-END;
+END //
+DELIMITER ;
 
 CALL CheckSalary(1);
 
 -- 2. IF-ELSEIF-ELSE (3개 이상 분기)
+DELIMITER //
 CREATE PROCEDURE GradeAssignment (IN score INT)
 BEGIN
   IF score >= 90 THEN
@@ -358,11 +361,13 @@ BEGIN
   ELSE
     SELECT 'F' AS grade;
   END IF;
-END;
+END //
+DELIMITER ;
 
 CALL GradeAssignment(85);
 
 -- 3. 간단한 CASE (값에 따른 매핑)
+DELIMITER //
 CREATE PROCEDURE SimpleCaseExample (IN month_num INT)
 BEGIN
   DECLARE month_name VARCHAR(20);
@@ -373,11 +378,13 @@ BEGIN
     ELSE 'Other'
   END;
   SELECT month_name;
-END;
+END //
+DELIMITER ;
 
 CALL SimpleCaseExample(3);
 
 -- 4. 데이터 검증 (조건에 따른 검증)
+DELIMITER //
 CREATE PROCEDURE ValidateData (IN emp_id INT, OUT is_valid INT)
 BEGIN
   DECLARE emp_salary DECIMAL;
@@ -390,7 +397,8 @@ BEGIN
   ELSE
     SET is_valid = 1;
   END IF;
-END;
+END //
+DELIMITER ;
 
 CALL ValidateData(1, @valid);
 SELECT @valid;
@@ -400,6 +408,7 @@ SELECT @valid;
 -- =====================================================
 
 -- 5. WHILE 기본 (데이터 생성)
+DELIMITER //
 CREATE PROCEDURE WhileLoop (IN count INT)
 BEGIN
   DECLARE i INT DEFAULT 1;
@@ -407,11 +416,13 @@ BEGIN
     INSERT INTO temp_table (id, data) VALUES (i, CONCAT('Data', i));
     SET i = i + 1;
   END WHILE;
-END;
+END //
+DELIMITER ;
 
--- CALL WhileLoop(10);
+CALL WhileLoop(10);
 
 -- 6. WHILE과 조건 (조건부 처리)
+DELIMITER //
 CREATE PROCEDURE ConditionalWhile (IN max_value INT)
 BEGIN
   DECLARE i INT DEFAULT 1;
@@ -421,11 +432,13 @@ BEGIN
     END IF;
     SET i = i + 1;
   END WHILE;
-END;
+END //
+DELIMITER ;
 
--- CALL ConditionalWhile(20);
+CALL ConditionalWhile(20);
 
 -- 7. WHILE 누적 계산 (합계 계산)
+DELIMITER //
 CREATE PROCEDURE SumCalculation (IN max_num INT, OUT total INT)
 BEGIN
   DECLARE i INT DEFAULT 1;
@@ -435,7 +448,8 @@ BEGIN
     SET i = i + 1;
   END WHILE;
   SET total = sum;
-END;
+END //
+DELIMITER ;
 
 CALL SumCalculation(100, @result);
 SELECT @result;
@@ -445,6 +459,7 @@ SELECT @result;
 -- =====================================================
 
 -- 8. REPEAT 기본 (최소 1번 실행)
+DELIMITER //
 CREATE PROCEDURE RepeatLoop (IN count INT)
 BEGIN
   DECLARE i INT DEFAULT 1;
@@ -453,11 +468,13 @@ BEGIN
     SET i = i + 1;
   UNTIL i > count
   END REPEAT;
-END;
+END //
+DELIMITER ;
 
--- CALL RepeatLoop(5);
+CALL RepeatLoop(5);
 
 -- 9. LOOP 기본 (LEAVE로 종료)
+DELIMITER //
 CREATE PROCEDURE LoopExample (IN max_count INT)
 BEGIN
   DECLARE i INT DEFAULT 1;
@@ -468,11 +485,13 @@ BEGIN
       LEAVE my_loop;
     END IF;
   END LOOP;
-END;
+END //
+DELIMITER ;
 
--- CALL LoopExample(10);
+CALL LoopExample(10);
 
 -- 10. LOOP와 ITERATE (반복 건너뛰기)
+DELIMITER //
 CREATE PROCEDURE LoopWithIterate (IN max_val INT)
 BEGIN
   DECLARE i INT DEFAULT 0;
@@ -488,15 +507,17 @@ BEGIN
   
     INSERT INTO temp_table (id, data) VALUES (i, CONCAT('Odd: ', i));
   END LOOP;
-END;
+END //
+DELIMITER ;
 
--- CALL LoopWithIterate(20);
+CALL LoopWithIterate(20);
 
 -- =====================================================
 -- 섹션 4: 중첩과 결합 (11-13번)
 -- =====================================================
 
 -- 11. 중첩 반복문 (반복문 안의 반복문)
+DELIMITER //
 CREATE PROCEDURE NestedLoops (IN row_count INT, IN col_count INT)
 BEGIN
   DECLARE i INT DEFAULT 1;
@@ -509,11 +530,13 @@ BEGIN
     END WHILE;
     SET i = i + 1;
   END WHILE;
-END;
+END //
+DELIMITER ;
 
--- CALL NestedLoops(5, 5);
+CALL NestedLoops(5, 5);
 
 -- 12. IF와 반복문 조합 (조건부 반복 처리)
+DELIMITER //
 CREATE PROCEDURE IfAndWhile (IN max_num INT)
 BEGIN
   DECLARE i INT DEFAULT 1;
@@ -527,15 +550,17 @@ BEGIN
     END IF;
     SET i = i + 1;
   END WHILE;
-END;
+END //
+DELIMITER ;
 
--- CALL IfAndWhile(30);
+CALL IfAndWhile(30);
 
 -- =====================================================
 -- 섹션 5: 실무 응용 (14-15번)
 -- =====================================================
 
 -- 13. 조건부 INSERT (조건에 따른 삽입)
+DELIMITER //
 CREATE PROCEDURE ConditionalInsert (IN emp_salary DECIMAL)
 BEGIN
   IF emp_salary > 5000000 THEN
@@ -545,11 +570,13 @@ BEGIN
   ELSE
     INSERT INTO temp_table (id, data) VALUES (3, 'Entry Level');
   END IF;
-END;
+END //
+DELIMITER ;
 
 CALL ConditionalInsert(4500000);
 
 -- 14. 조건부 UPDATE (조건에 따른 수정)
+DELIMITER //
 CREATE PROCEDURE ConditionalUpdate (IN emp_id INT, IN new_salary DECIMAL)
 BEGIN
   DECLARE old_salary DECIMAL;
@@ -560,11 +587,13 @@ BEGIN
   ELSE
     UPDATE employees SET salary = new_salary WHERE employee_id = emp_id;
   END IF;
-END;
+END //
+DELIMITER ;
 
--- CALL ConditionalUpdate(1, 6000000);
+CALL ConditionalUpdate(1, 6000000);
 
 -- 15. 루프 카운터 (반복 횟수 제한)
+DELIMITER //
 CREATE PROCEDURE LoopWithCounter (IN limit_count INT)
 BEGIN
   DECLARE counter INT DEFAULT 0;
@@ -574,9 +603,10 @@ BEGIN
     INSERT INTO temp_table (id, data) VALUES (counter, CONCAT('Iteration ', counter));
     SET counter = counter + 1;
   END WHILE;
-END;
+END //
+DELIMITER ;
 
--- CALL LoopWithCounter(100);
+CALL LoopWithCounter(100);
 ```
 
 
