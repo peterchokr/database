@@ -418,35 +418,42 @@ UPDATE employee_view SET salary = 4800000 WHERE employee_id = 2;
 -- =====================================================
 
 -- 9. 기본 저장프로시저 (입력 매개변수)
+DELIMITER //
 CREATE PROCEDURE GetEmployeeInfo (IN emp_id INT)
 BEGIN
   SELECT employee_id, name, salary, dept_id
   FROM employees
   WHERE employee_id = emp_id;
-END;
+END //
+DELIMITER ;
 
 CALL GetEmployeeInfo(1);
 
 -- 10. 출력 매개변수 (결과 반환)
+DELIMITER //
 CREATE PROCEDURE GetEmployeeCount (OUT emp_count INT)
 BEGIN
   SELECT COUNT(*) INTO emp_count FROM employees;
-END;
+END //
+DELIMITER //
 
 CALL GetEmployeeCount(@count);
 SELECT @count;
 
 -- 11. 입출력 매개변수 (급여 인상)
+DELIMITER //
 CREATE PROCEDURE IncreaseSalary (INOUT salary DECIMAL)
 BEGIN
   SET salary = salary * 1.1;
-END;
+END //
+DELIMITER ;
 
 SET @my_salary = 5000000;
 CALL IncreaseSalary(@my_salary);
 SELECT @my_salary;
 
 -- 12. IF-ELSE 조건문 (급여 수준 분류)
+DELIMITER //
 CREATE PROCEDURE CheckSalaryLevel (IN emp_id INT)
 BEGIN
   DECLARE emp_salary DECIMAL;
@@ -459,11 +466,13 @@ BEGIN
   ELSE
     SELECT '하위' AS salary_level;
   END IF;
-END;
+END //
+DELIMITER ;
 
 CALL CheckSalaryLevel(1);
 
 -- 13. CASE 문 (학점 할당)
+DELIMITER //
 CREATE PROCEDURE GetGrade (IN score INT, OUT grade CHAR(1))
 BEGIN
   SET grade = CASE
@@ -472,7 +481,8 @@ BEGIN
     WHEN score >= 70 THEN 'C'
     ELSE 'F'
   END;
-END;
+END //
+DELIMITER ;
 
 CALL GetGrade(85, @result);
 SELECT @result;
@@ -482,6 +492,7 @@ SELECT @result;
 -- =====================================================
 
 -- 14. WHILE 루프 (반복 처리)
+DELIMITER //
 CREATE PROCEDURE InsertSampleData (IN count INT)
 BEGIN
   DECLARE i INT DEFAULT 1;
@@ -490,11 +501,13 @@ BEGIN
     VALUES (CONCAT('직원', i), 1, 3000000 + (i * 100000));
     SET i = i + 1;
   END WHILE;
-END;
+END //
+DELIMITER ;
 
--- CALL InsertSampleData(5);
+CALL InsertSampleData(5);
 
 -- 15. 변수 선언과 할당 (급여 통계)
+DELIMITER //
 CREATE PROCEDURE CalculateSalaryInfo ()
 BEGIN
   DECLARE total_salary DECIMAL;
@@ -506,11 +519,13 @@ BEGIN
   SELECT COUNT(*) INTO emp_count FROM employees;
   
   SELECT total_salary, avg_salary, emp_count;
-END;
+END //
+DELIMITER ;
 
 CALL CalculateSalaryInfo();
 
 -- 16. 트랜잭션 포함 프로시저 (부서 이동)
+DELIMITER //
 CREATE PROCEDURE TransferEmployee (IN emp_id INT, IN new_dept INT)
 BEGIN
   START TRANSACTION;
@@ -518,15 +533,17 @@ BEGIN
   UPDATE employees SET dept_id = new_dept WHERE employee_id = emp_id;
   
   COMMIT;
-END;
+END //
+DELIMITER ;
 
--- CALL TransferEmployee(1, 2);
+CALL TransferEmployee(1, 2);
 
 -- =====================================================
 -- 섹션 5: 실무 응용 (17-20번)
 -- =====================================================
 
 -- 17. 데이터 검증 프로시저 (존재 여부 확인)
+DELIMITER //
 CREATE PROCEDURE ValidateEmployee (IN emp_id INT, OUT is_valid INT)
 BEGIN
   IF EXISTS(SELECT 1 FROM employees WHERE employee_id = emp_id) THEN
@@ -534,22 +551,26 @@ BEGIN
   ELSE
     SET is_valid = 0;
   END IF;
-END;
+END //
+DELIMITER ;
 
 CALL ValidateEmployee(1, @valid);
 SELECT @valid;
 
 -- 18. 통계 계산 프로시저 (총합, 평균, 최고값)
+DELIMITER //
 CREATE PROCEDURE GetSalaryStatistics (OUT total DECIMAL, OUT average DECIMAL, OUT max DECIMAL)
 BEGIN
   SELECT SUM(salary), AVG(salary), MAX(salary)
   INTO total, average, max FROM employees;
-END;
+END //
+DELIMITER ;
 
 CALL GetSalaryStatistics(@t, @a, @m);
 SELECT @t AS total, @a AS average, @m AS max;
 
 -- 19. 마이그레이션 프로시저 (데이터 이전)
+DELIMITER //
 CREATE PROCEDURE MigrateOldEmployees ()
 BEGIN
   START TRANSACTION;
@@ -560,17 +581,20 @@ BEGIN
   DELETE FROM employees WHERE hire_date < '2020-01-01';
   
   COMMIT;
-END;
+END //
+DELIMITER ;
 
--- CALL MigrateOldEmployees();
+CALL MigrateOldEmployees();
 
 -- 20. 백업 프로시저 (데이터 복사)
+DELIMITER //
 CREATE PROCEDURE BackupData ()
 BEGIN
   DELETE FROM employees_archive;
   INSERT INTO employees_archive
   SELECT * FROM employees;
-END;
+END //
+DELIMITER ;
 
 CALL BackupData();
 ```
