@@ -178,18 +178,7 @@ CREATE TABLE salary_history_archive (
     changed_at TIMESTAMP
 );
 
--- =====================================================
--- 8. trigger_debug_log 테이블 (트리거 디버그 로그)
--- =====================================================
-CREATE TABLE trigger_debug_log (
-    log_id INT PRIMARY KEY AUTO_INCREMENT,
-    trigger_name VARCHAR(100),
-    operation VARCHAR(50),
-    old_data TEXT,
-    new_data TEXT,
-    debug_message TEXT,
-    created_at TIMESTAMP
-);
+
 ```
 
 ### ✅ 데이터베이스 생성 확인
