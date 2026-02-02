@@ -254,6 +254,7 @@ END;
 
 ```sql
 -- 직원 급여 변경을 추적하는 트리거
+DELIMITER //
 CREATE TRIGGER salary_update_log
 AFTER UPDATE ON employees
 FOR EACH ROW
@@ -266,7 +267,8 @@ BEGIN
     (emp_id, emp_name, old_salary, new_salary, change_reason, changed_at)
     VALUES (NEW.employee_id, NEW.name, OLD.salary, NEW.salary, '정기 인상', NOW());
   END IF;
-END;
+END //
+DELIMITER ;
 
 -- 테스트: 급여 변경
 UPDATE employees SET salary = 5500000 WHERE employee_id = 1;
@@ -287,6 +289,7 @@ SELECT * FROM salary_history;
 
 ```sql
 -- 급여는 반드시 양수여야 한다는 규칙 강제
+DELIMITER //
 CREATE TRIGGER validate_salary
 BEFORE INSERT ON employees
 FOR EACH ROW
@@ -302,7 +305,8 @@ BEGIN
     SIGNAL SQLSTATE '45000'
     SET MESSAGE_TEXT = '1억원 이상의 급여는 CEO만 가능합니다.';
   END IF;
-END;
+END //
+DELIMITER ;
 
 -- 테스트 1: 음수 급여 입력 (실패해야 함)
 INSERT INTO employees (name, salary, position, department) 
@@ -319,20 +323,22 @@ VALUES ('이순신', 5000000, '대리', '개발팀');
 
 ```sql
 -- 신규 직원 등록 시 자동으로 등록일 설정
+DELIMITER //
 CREATE TRIGGER set_hire_date_on_insert
 BEFORE INSERT ON employees
 FOR EACH ROW
 BEGIN
   -- hire_date가 지정되지 않으면 오늘 날짜 자동 설정
   IF NEW.hire_date IS NULL THEN
-    SET NEW.hire_date = CURDATE();
+    SET NEW.hire_date = (CURDATE());
   END IF;
   
   -- 등급이 지정되지 않으면 'Level 1' 자동 설정
   IF NEW.emp_level IS NULL THEN
     SET NEW.emp_level = 'Level 1';
   END IF;
-END;
+END //
+DELIMITER ;
 
 -- 테스트: hire_date와 emp_level을 지정하지 않고 삽입
 INSERT INTO employees (name, salary, position, department) 
@@ -356,6 +362,7 @@ SELECT name, hire_date, emp_level FROM employees WHERE name = '강감찬';
 
 ```sql
 -- 직원 정보 변경 시 모든 변경사항을 로그 테이블에 기록
+DELIMITER //
 CREATE TRIGGER audit_employee_update
 AFTER UPDATE ON employees
 FOR EACH ROW
@@ -375,7 +382,8 @@ BEGIN
     INSERT INTO audit_log (table_name, operation, column_name, old_value, new_value, changed_at)
     VALUES ('employees', 'UPDATE', 'department', OLD.department, NEW.department, NOW());
   END IF;
-END;
+END //
+DELIMITER ;
 
 -- 테스트: 직원 정보 업데이트
 UPDATE employees 
@@ -401,6 +409,7 @@ SELECT * FROM audit_log;
 
 ```sql
 -- 상품이 추가될 때 자동으로 상품 코드 생성
+DELIMITER //
 CREATE TRIGGER generate_product_code
 BEFORE INSERT ON products
 FOR EACH ROW
@@ -414,7 +423,8 @@ BEGIN
   
   -- 상품 등록 시간 자동 설정
   SET NEW.created_at = NOW();
-END;
+END //
+DELIMITER ;
 
 -- 테스트: 상품 추가
 INSERT INTO products (product_name, price) 
@@ -438,6 +448,7 @@ SELECT * FROM products;
 
 ```sql
 -- 급여 변경이 있을 때마다 이력 기록
+DELIMITER //
 CREATE TRIGGER track_salary_changes
 AFTER UPDATE ON employees
 FOR EACH ROW
@@ -464,7 +475,8 @@ BEGIN
       NOW()
     );
   END IF;
-END;
+END //
+DELIMITER ;
 
 -- 테스트: 급여 업데이트
 UPDATE employees SET salary = 5500000 WHERE employee_id = 2;
@@ -478,6 +490,7 @@ SELECT * FROM salary_change_percent;
 
 ```sql
 -- 급여 인상이 과도하지 않도록 제한
+DELIMITER //
 CREATE TRIGGER validate_salary_increase
 BEFORE UPDATE ON employees
 FOR EACH ROW
@@ -501,7 +514,8 @@ BEGIN
   
   -- 수정 시간 자동 업데이트
   SET NEW.last_modified = NOW();
-END;
+END //
+DELIMITER ;
 
 -- 테스트 1: 50% 이상 인상 시도 (실패)
 UPDATE employees SET salary = 8000000 WHERE employee_id = 3;
@@ -524,6 +538,7 @@ UPDATE employees SET salary = 5100000 WHERE employee_id = 3;
 
 ```sql
 -- 직원 삭제 전 모든 정보를 아카이브 테이블에 저장
+DELIMITER //
 CREATE TRIGGER archive_employee_before_delete
 BEFORE DELETE ON employees
 FOR EACH ROW
@@ -548,7 +563,8 @@ BEGIN
   INSERT INTO salary_history_archive
   SELECT * FROM salary_history 
   WHERE emp_id = OLD.employee_id;
-END;
+END //
+DELIMITER ;
 
 -- 테스트: 직원 삭제
 DELETE FROM employees WHERE employee_id = 1;
@@ -578,8 +594,6 @@ SHOW TRIGGERS FROM ch12_trigger;
 -- 안전한 삭제 (존재하지 않으면 무시)
 DROP TRIGGER IF EXISTS salary_update_log;
 
--- 특정 데이터베이스의 트리거 삭제
-DROP TRIGGER IF EXISTS ch12_trigger.salary_update_log;
 ```
 
 ---
@@ -599,28 +613,6 @@ DROP TRIGGER IF EXISTS ch12_trigger.salary_update_log;
 -- 트리거 임시 삭제 후 재생성
 DROP TRIGGER IF EXISTS trigger_name;
 CREATE TRIGGER trigger_name ...
-```
-
-#### 🐛 디버깅의 어려움 (실행 가능한 예제)
-
-```sql
--- 트리거에 디버그 로그 추가
-CREATE TRIGGER debug_trigger
-AFTER INSERT ON employees
-FOR EACH ROW
-BEGIN
-  INSERT INTO trigger_debug_log 
-  (trigger_name, operation, new_data, debug_message, created_at)
-  VALUES ('debug_trigger', 'INSERT', CONCAT('ID:', NEW.employee_id), 
-          '직원 추가됨', NOW());
-END;
-
--- 테스트: 직원 추가
-INSERT INTO employees (name, salary, position, department) 
-VALUES ('디버그테스트', 3500000, '사원', '재무팀');
-
--- 디버그 로그 확인
-SELECT * FROM trigger_debug_log;
 ```
 
 #### 📋 호환성 문제
