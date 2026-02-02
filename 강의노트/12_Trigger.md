@@ -143,7 +143,7 @@ END;
 
 ---
 
-### 12.3 NEW와 OLD 참조
+### 12.3 NEW와 OLD 
 
 #### 🎯 NEW와 OLD의 개념
 
@@ -209,17 +209,12 @@ END;
 
 #### 📊 BEFORE 트리거의 특징
 
-**✓ 할 수 있는 것:**
 
 - 데이터 검증 (유효성 확인)
 - NEW 값 수정/변환
 - 잘못된 데이터 거부 (SIGNAL 오류 발생)
 - 자동 값 설정 (현재 날짜, 기본값 등)
 
-**✗ 할 수 없는 것:**
-
-- 데이터베이스의 다른 테이블 변경
-- 로그 기록 (아직 커밋되지 않았으므로)
 
 #### 💼 실전 예제 1: 데이터 검증
 
@@ -310,12 +305,8 @@ VALUES ('이영희', 4000000);
 - 이메일 발송 (일부 DBMS)
 - 각종 후속 작업
 
-**✗ 할 수 없는 것:**
 
-- NEW/OLD 값 수정 (이미 데이터가 저장됨)
-- 현재 작업 거부 (이미 커밋됨)
-
-#### 💼 실전 예제 1: 감사 로그 기록
+#### 💼 실전 예제 : 감사 로그 기록
 
 ```sql
 -- 직원 정보 변경 시 모든 변경사항을 로그 테이블에 기록
@@ -357,23 +348,6 @@ WHERE employee_id = 1;
 -- 로그3: employees UPDATE department '인사팀' → '개발팀'
 ```
 
-#### 💼 실전 예제 2: 자동 계산 및 동기화
-
-```sql
--- 상품 삭제 시 관련 재고 정보도 함께 아카이브
-CREATE TRIGGER archive_product_on_delete
-AFTER DELETE ON products
-FOR EACH ROW
-BEGIN
-  -- 삭제된 상품의 정보를 백업 테이블에 저장
-  INSERT INTO product_archive (product_id, product_name, price, stock, deleted_at)
-  VALUES (OLD.product_id, OLD.product_name, OLD.price, OLD.stock, NOW());
-  
-  -- 삭제된 상품의 주문 기록도 수정
-  UPDATE order_items SET product_name = CONCAT('[삭제됨] ', OLD.product_name)
-  WHERE product_id = OLD.product_id;
-END;
-```
 
 ---
 
@@ -590,23 +564,6 @@ DROP TRIGGER IF EXISTS trigger_name;
 CREATE TRIGGER trigger_name ...
 ```
 
-#### 🔗 연쇄 반응 (Cascading)
-
-**문제:**
-
-- 트리거 A가 실행되어 테이블 B 수정
-- 테이블 B의 트리거가 실행되어 테이블 C 수정
-- 의도하지 않은 복잡한 연쇄 반응
-
-**예방:**
-
-```sql
--- 트리거 깊이 제한 (MySQL)
--- 기본값: 15단계까지만 가능 (설정으로 변경 가능)
-
--- 트리거 로직을 명확하게 문서화
--- 각 트리거가 무엇을 하는지 주석으로 표시
-```
 
 #### 🐛 디버깅의 어려움
 
