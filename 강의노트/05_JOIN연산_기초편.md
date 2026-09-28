@@ -151,7 +151,6 @@ INNER JOIN으로 관련 데이터를 연결하는 실습부터 시작하여, LEF
 -- =====================================================
 -- 3-1. INNER JOIN 실습 (기본)
 -- =====================================================
--- 실습 5-1~5-11: 기본 INNER JOIN
 
 -- 1. 강좌와 담당 교수, 학점 조회
 SELECT c.course_name, p.professor_name, c.credits
@@ -227,7 +226,6 @@ WHERE e.grade IN ('A', 'B');
 -- =====================================================
 -- 3-2. LEFT JOIN 실습
 -- =====================================================
--- 실습 5-12~5-20: LEFT JOIN
 
 -- 12. 모든 교수와 담당 강좌 조회 (강좌 없는 교수도 포함)
 SELECT p.professor_name, c.course_name
@@ -253,75 +251,41 @@ LEFT JOIN professor p ON c.professor_id = p.professor_id
 LEFT JOIN enrollment e ON c.course_id = e.course_id
 LEFT JOIN student s ON e.student_id = s.student_id;
 
--- 16. 아직 강좌가 배정되지 않은 교수
-SELECT p.professor_name
-FROM professor p
-LEFT JOIN course c ON p.professor_id = c.professor_id
-WHERE c.course_id IS NULL;
-
--- 17. 아직 수강한 강좌가 없는 학생
-SELECT s.student_name
-FROM student s
-LEFT JOIN enrollment e ON s.student_id = e.student_id
-WHERE e.enrollment_id IS NULL;
-
--- 18. 모든 교수별 담당 강좌 수
+-- 16. 모든 교수별 담당 강좌 수
 SELECT p.professor_name, COUNT(c.course_id) AS 담당강좌수
 FROM professor p
 LEFT JOIN course c ON p.professor_id = c.professor_id
 GROUP BY p.professor_name;
 
--- 19. 모든 학생의 수강 현황 (COUNT 활용)
+-- 17. 모든 학생의 수강 현황 (COUNT 활용)
 SELECT s.student_name, COUNT(e.student_id) AS 수강강좌수
 FROM student s
 LEFT JOIN enrollment e ON s.student_id = e.student_id
 GROUP BY s.student_name;
 
--- 20. 학생별 총 수강학점 (COALESCE 활용)
-SELECT s.student_name, COALESCE(SUM(c.credits), 0) AS 총학점
-FROM student s
-LEFT JOIN enrollment e ON s.student_id = e.student_id
-LEFT JOIN course c ON e.course_id = c.course_id
-GROUP BY s.student_name;
-
 -- =====================================================
 -- 3-3. 복합 JOIN 및 고급 실습
 -- =====================================================
--- 실습 5-21~5-30: 복합 JOIN 및 필터링
 
--- 21. 성적별 학생 수 (집계)
+-- 18. 성적별 학생 수 (집계)
 SELECT e.grade, COUNT(e.student_id) AS 학생수
 FROM enrollment e
 GROUP BY e.grade;
 
--- 22. 전공별 수강 강좌 수 (LEFT JOIN + GROUP BY)
+-- 19. 전공별 수강 강좌 수 (LEFT JOIN + GROUP BY)
 SELECT s.major, COUNT(DISTINCT e.course_id) AS 수강강좌수
 FROM student s
 LEFT JOIN enrollment e ON s.student_id = e.student_id
 GROUP BY s.major;
 
--- 23. 2개 이상의 강좌를 수강하는 학생 (HAVING)
-SELECT s.student_name, COUNT(e.course_id) AS 수강강좌수
-FROM student s
-INNER JOIN enrollment e ON s.student_id = e.student_id
-GROUP BY s.student_name
-HAVING COUNT(e.course_id) >= 2;
-
--- 24. 교수별 수강생 합계 (LEFT JOIN + COUNT DISTINCT)
+-- 20. 교수별 수강생 합계 (LEFT JOIN + COUNT DISTINCT)
 SELECT p.professor_name, COUNT(DISTINCT e.student_id) AS 수강생수
 FROM professor p
 LEFT JOIN course c ON p.professor_id = c.professor_id
 LEFT JOIN enrollment e ON c.course_id = e.course_id
 GROUP BY p.professor_name;
 
--- 25. 강좌별 학점 분포 (GROUP BY 2개 컬럼)
-SELECT c.course_name, e.grade, COUNT(*) AS 인원
-FROM course c
-LEFT JOIN enrollment e ON c.course_id = e.course_id
-GROUP BY c.course_name, e.grade
-ORDER BY c.course_name;
-
--- 26. AI소프트웨어학과 학생들의 강좌별 수강인원
+-- 21. AI소프트웨어학과 학생들의 강좌별 수강인원
 SELECT c.course_name, COUNT(DISTINCT e.student_id) AS 학과수강인원
 FROM course c
 LEFT JOIN enrollment e ON c.course_id = e.course_id
@@ -329,33 +293,11 @@ LEFT JOIN student s ON e.student_id = s.student_id
 WHERE s.major = 'AI소프트웨어학과'
 GROUP BY c.course_name;
 
--- 27. A학점 수강생이 있는 강좌 (DISTINCT)
+-- 22. A학점 수강생이 있는 강좌 (DISTINCT)
 SELECT DISTINCT c.course_name
 FROM course c
 INNER JOIN enrollment e ON c.course_id = e.course_id
 WHERE e.grade = 'A';
-
--- 28. 교수 없는 강좌 확인 (WHERE IS NULL)
-SELECT c.course_name
-FROM course c
-LEFT JOIN professor p ON c.professor_id = p.professor_id
-WHERE p.professor_id IS NULL;
-
--- 29. 각 교수의 강좌 개설 현황 (GROUP_CONCAT)
-SELECT p.professor_name, 
-       GROUP_CONCAT(c.course_name SEPARATOR ', ') AS 개설강좌
-FROM professor p
-LEFT JOIN course c ON p.professor_id = c.professor_id
-GROUP BY p.professor_name;
-
--- 30. 학생별 이수 강좌 및 학점 (GROUP_CONCAT + SUM)
-SELECT s.student_name, 
-       GROUP_CONCAT(c.course_name SEPARATOR ', ') AS 이수강좌,
-       SUM(c.credits) AS 총학점
-FROM student s
-INNER JOIN enrollment e ON s.student_id = e.student_id
-INNER JOIN course c ON e.course_id = c.course_id
-GROUP BY s.student_name;
 ```
 
 ---
