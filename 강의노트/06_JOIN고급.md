@@ -206,60 +206,8 @@ graph TD
 
 ---
 
-### 6.6 여러 테이블의 JOIN (3개 이상)
 
-실무에서는 3개 이상의 테이블을 결합해야 하는 경우가 빈번합니다.
-
-**예시:**
-
-```sql
-SELECT e.name, d.department_name, s.salary_grade
-FROM employees e
-JOIN departments d ON e.dept_id = d.dept_id
-JOIN salary_grades s ON e.salary BETWEEN s.min_salary AND s.max_salary;
-```
-
-**중요사항:**
-
-- 각 JOIN 조건을 명확히 작성
-- LEFT JOIN 사용 시 순서가 중요함
-- 테이블 별칭(AS)으로 가독성 향상
-
-```mermaid
-graph LR
-    A["employees"] -->|JOIN| B["departments"]
-    B -->|JOIN| C["projects"]
-    C --> D["최종 결과<br/>3개 테이블 통합"]
-  
-    style A fill:#e3f2fd
-    style B fill:#f3e5f5
-    style C fill:#fff3e0
-    style D fill:#c8e6c9
-```
-
----
-
-### 6.7 JOIN  선택 기준
-
-```mermaid
-graph TD
-    A["어떤 JOIN을<br/>사용할까?"] --> B{공통 데이터만<br/>필요한가?}
-    B -->|Yes| C["INNER JOIN"]
-    B -->|No| D{좌측 모든 데이터<br/>필요한가?}
-    D -->|Yes| E["LEFT JOIN"]
-    D -->|No| F{우측 모든 데이터<br/>필요한가?}
-    F -->|Yes| G["RIGHT JOIN"]
-    F -->|No| H["FULL JOIN"]
-  
-    style C fill:#c8e6c9
-    style E fill:#aed581
-    style G fill:#ffe0b2
-    style H fill:#f3e5f5
-```
-
----
-
-### 6.8 JOIN 성능 최적화
+### 6.6 JOIN 성능 최적화
 
 **성능 개선을 위한 고려사항:**
 
