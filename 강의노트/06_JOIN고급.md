@@ -289,7 +289,7 @@ INSERT INTO salary_grades VALUES
 
 ---
 
-## 💻 Part 3: 실습 (18개 문제)
+## 💻 Part 3: 실습 (16개 문제)
 
 ### 이 부분에서 배우는 것
 
@@ -330,12 +330,12 @@ ON e1.manager_id = e2.employee_id;
 -- 5. Self Join + WHERE (같은 부서 직원 쌍)
 SELECT e1.name AS employee1, e2.name AS employee2, e1.dept_id
 FROM employees e1
-JOIN employees e2
+INNER JOIN employees e2
 ON e1.dept_id = e2.dept_id
 WHERE e1.employee_id < e2.employee_id;
 
 -- =====================================================
--- 6-6~6-10: CROSS JOIN, 다중 테이블 JOIN
+-- 6-6~6-8: CROSS JOIN, 다중 테이블 JOIN
 -- =====================================================
 
 -- 6. CROSS JOIN (부서와 급여등급의 모든 조합)
@@ -344,54 +344,39 @@ FROM departments d
 CROSS JOIN salary_grades s
 ORDER BY d.department_name, s.grade;
 
--- 7. 3개 테이블 JOIN (직원, 부서, 급여등급)
-SELECT e.employee_id, e.name, d.department_name, s.grade
-FROM employees e
-JOIN departments d
-ON e.dept_id = d.dept_id
-JOIN salary_grades s
-ON e.salary BETWEEN s.min_salary AND s.max_salary;
-
--- 8. LEFT JOIN 체이닝 (직원, 부서, 위치)
+-- 7. LEFT JOIN 체이닝 (직원, 부서, 위치)
 SELECT e.employee_id, e.name, d.department_name, d.location
 FROM employees e
 LEFT JOIN departments d
 ON e.dept_id = d.dept_id
 ORDER BY e.employee_id;
 
--- 9. JOIN + GROUP BY (부서별 직원 수)
-SELECT d.department_name, COUNT(e.employee_id) AS employee_count
-FROM employees e
-JOIN departments d
-ON e.dept_id = d.dept_id
-GROUP BY d.dept_id, d.department_name;
-
--- 10. JOIN + DISTINCT (중복 제거)
+-- 8. JOIN + DISTINCT (중복 제거)
 SELECT DISTINCT d.department_name
 FROM employees e
-JOIN departments d
+INNER JOIN departments d
 ON e.dept_id = d.dept_id;
 
 -- =====================================================
--- 6-11~6-18: 고급 기능 (ORDER BY, LIMIT, CASE, 집계함수 등)
+-- 6-9~6-16: 고급 기능 (ORDER BY, LIMIT, CASE, 집계함수 등)
 -- =====================================================
 
--- 11. JOIN + ORDER BY (다중 열 정렬)
+-- 9. JOIN + ORDER BY (다중 열 정렬)
 SELECT e.name, d.department_name, e.salary
 FROM employees e
-JOIN departments d
+INNER JOIN departments d
 ON e.dept_id = d.dept_id
 ORDER BY d.department_name ASC, e.salary DESC;
 
--- 12. JOIN + LIMIT (상위 5개 행)
+-- 10. JOIN + LIMIT (상위 5개 행)
 SELECT e.name, e.salary, d.department_name
 FROM employees e
-JOIN departments d
+INNER JOIN departments d
 ON e.dept_id = d.dept_id
 ORDER BY e.salary DESC
 LIMIT 5;
 
--- 13. JOIN + CASE 문 (급여 레벨 분류)
+-- 11. JOIN + CASE 문 (급여 레벨 분류)
 SELECT e.name, d.department_name,
        CASE 
            WHEN e.salary >= 5000000 THEN '상위'
@@ -399,20 +384,20 @@ SELECT e.name, d.department_name,
            ELSE '하위'
        END AS salary_level
 FROM employees e
-JOIN departments d
+INNER JOIN departments d
 ON e.dept_id = d.dept_id;
 
--- 14. JOIN + 집계함수 (부서별 집계)
+-- 12. JOIN + 집계함수 (부서별 집계)
 SELECT d.department_name, 
        COUNT(e.employee_id) AS emp_count,
        AVG(e.salary) AS avg_salary,
        MAX(e.salary) AS max_salary
 FROM employees e
-JOIN departments d
+INNER JOIN departments d
 ON e.dept_id = d.dept_id
-GROUP BY d.dept_id, d.department_name;
+GROUP BY d.dept_id;
 
--- 15. FULL OUTER JOIN (LEFT + RIGHT UNION)
+-- 13. FULL OUTER JOIN (LEFT + RIGHT UNION)
 SELECT COALESCE(e.employee_id, 0) AS emp_id,
        COALESCE(e.name, '없음') AS emp_name,
        COALESCE(d.department_name, '없음') AS dept_name
@@ -427,24 +412,24 @@ FROM employees e
 RIGHT JOIN departments d
 ON e.dept_id = d.dept_id;
 
--- 16. Self Join + 범위 조회 (급여등급 간 범위)
+-- 14. Self Join + 범위 조회 (급여등급 간 범위)
 SELECT s1.grade AS current_grade, s2.grade AS next_grade
 FROM salary_grades s1
-JOIN salary_grades s2
+INNER JOIN salary_grades s2
 ON s1.max_salary < s2.min_salary;
 
--- 17. JOIN + ORDER BY (다중 정렬)
+-- 15. JOIN + ORDER BY (다중 정렬)
 SELECT e.name, e.salary, d.department_name
 FROM employees e
-JOIN departments d
+INNER JOIN departments d
 ON e.dept_id = d.dept_id
 ORDER BY e.salary DESC, e.name ASC;
 
--- 18. JOIN + 문자열 함수 (CONCAT)
+-- 16. JOIN + 문자열 함수 (CONCAT)
 SELECT CONCAT(e.name, ' - ', d.department_name) AS employee_info,
        e.salary
 FROM employees e
-JOIN departments d
+INNER JOIN departments d
 ON e.dept_id = d.dept_id;
 ```
 
