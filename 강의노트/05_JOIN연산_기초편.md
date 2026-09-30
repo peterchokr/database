@@ -140,7 +140,7 @@ INSERT INTO enrollment VALUES
 
 ---
 
-## 💻 Part 3: 실습 (30개 문제)
+## 💻 Part 3: 실습 (22개 문제)
 
 ### 이 부분에서 배우는 것
 
