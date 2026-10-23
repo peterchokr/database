@@ -3,541 +3,286 @@
 ## 📚 개요
 
 이 부록에서는 파이썬으로 데이터베이스를 직접 다루는 방법을 배웁니다.
-SQLite 데이터베이스를 사용하여 간단한 **할일 관리(Todo Manager)** 애플리케이션을 만들어봅시다.
-
-### 🎯 학습 목표
-
-- 파이썬에서 SQLite 연결
-- CREATE, INSERT, SELECT, UPDATE, DELETE 실행
-- 데이터베이스 트랜잭션 관리
-- 실제 애플리케이션 개발 경험
+MySQL 데이터베이스를 사용하여 간단한 **주소록 관리(Todo Manager)** 애플리케이션을 살펴봅니다.
 
 ---
 
-## 📖 Part 1: 파이썬과 SQLite 기초
+## 📖 Part 1: DB 준비하기
 
-### 1.1 SQLite란?
-
-```
-SQLite는 가볍고 간단한 데이터베이스
-- 파일 기반 (서버 불필요)
-- 파이썬에 기본 내장 (sqlite3 모듈)
-- 초기 학습에 최적
-```
-
-### 1.2 SQLite 연결하기
 
 ```python
-import sqlite3
+-- 데이터베이스 생성
+CREATE DATABASE IF NOT EXISTS address_db DEFAULT CHARACTER SET utf8mb4;
 
-# 데이터베이스 파일 생성/연결
-conn = sqlite3.connect('todo.db')
+-- 데이터베이스 선택
+USE address_db;
 
-# 커서 생성 (SQL 실행)
-cursor = conn.cursor()
-
-# 데이터베이스 종료
-conn.close()
-```
-
-### 1.3 테이블 생성
-
-```python
-import sqlite3
-
-conn = sqlite3.connect('todo.db')
-cursor = conn.cursor()
-
-# 테이블 생성
-sql = '''
-CREATE TABLE IF NOT EXISTS todos (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    description TEXT,
-    status TEXT DEFAULT '미완료',
-    created_date DATE
-)
-'''
-
-cursor.execute(sql)
-conn.commit()  # 변경사항 저장
-conn.close()
-```
-
----
-
-## 💻 Part 2: Todo Manager 애플리케이션
-
-### 2.1 완전한 코드
-
-```mermaid
-graph TD
-    A["TodoManager<br/>클래스"] --> B["초기화<br/>__init__"]
-    A --> C["생성<br/>add_todo"]
-    A --> D["조회<br/>view_todos"]
-    A --> E["수정<br/>update_status"]
-    A --> F["삭제<br/>delete_todo"]
-  
-    B --> B1["DB 연결"]
-    C --> C1["INSERT"]
-    D --> D1["SELECT"]
-    E --> E1["UPDATE"]
-    F --> F1["DELETE"]
-  
-    style A fill:#e1f5fe
-    style B fill:#e3f2fd
-    style C fill:#c8e6c9
-    style D fill:#aed581
-    style E fill:#fff9c4
-    style F fill:#ffcdd2
-```
-
-```python
-import sqlite3
-from datetime import datetime
-
-class TodoManager:
-    def __init__(self, db_name='todo.db'):
-        self.conn = sqlite3.connect(db_name)
-        self.cursor = self.conn.cursor()
-        self.create_table()
-  
-    def create_table(self):
-        '''테이블 생성'''
-        sql = '''
-        CREATE TABLE IF NOT EXISTS todos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            description TEXT,
-            status TEXT DEFAULT '미완료',
-            created_date TEXT
-        )
-        '''
-        self.cursor.execute(sql)
-        self.conn.commit()
-  
-    def add_todo(self, title, description=''):
-        '''할일 추가'''
-        sql = '''
-        INSERT INTO todos (title, description, created_date)
-        VALUES (?, ?, ?)
-        '''
-        self.cursor.execute(sql, (title, description, datetime.now().date()))
-        self.conn.commit()
-        print(f"✅ '{title}' 할일이 추가되었습니다.")
-  
-    def view_todos(self, status='전체'):
-        '''할일 조회'''
-        if status == '전체':
-            sql = 'SELECT * FROM todos'
-        else:
-            sql = 'SELECT * FROM todos WHERE status = ?'
-            return self.cursor.execute(sql, (status,)).fetchall()
-    
-        return self.cursor.execute(sql).fetchall()
-  
-    def update_status(self, todo_id, new_status):
-        '''할일 상태 변경'''
-        sql = 'UPDATE todos SET status = ? WHERE id = ?'
-        self.cursor.execute(sql, (new_status, todo_id))
-        self.conn.commit()
-        print(f"✅ 할일 #{todo_id}이 '{new_status}'으로 변경되었습니다.")
-  
-    def delete_todo(self, todo_id):
-        '''할일 삭제'''
-        sql = 'DELETE FROM todos WHERE id = ?'
-        self.cursor.execute(sql, (todo_id,))
-        self.conn.commit()
-        print(f"✅ 할일 #{todo_id}이 삭제되었습니다.")
-  
-    def close(self):
-        '''데이터베이스 종료'''
-        self.conn.close()
-
-# 사용 예제
-if __name__ == '__main__':
-    manager = TodoManager()
-  
-    # 1. 할일 추가
-    manager.add_todo('파이썬 공부', '데이터베이스 챕터 완독')
-    manager.add_todo('프로젝트 완성', 'Todo Manager 완성')
-    manager.add_todo('운동하기', '헬스장 운동')
-  
-    # 2. 모든 할일 조회
-    print("\n[모든 할일]")
-    todos = manager.view_todos()
-    for todo in todos:
-        print(f"{todo[0]}. {todo[1]} - {todo[3]}")
-  
-    # 3. 할일 상태 변경
-    manager.update_status(1, '완료')
-  
-    # 4. 할일 삭제
-    manager.delete_todo(3)
-  
-    # 5. 완료된 할일만 조회
-    print("\n[완료된 할일]")
-    completed = manager.view_todos('완료')
-    for todo in completed:
-        print(f"✓ {todo[1]}")
-  
-    manager.close()
-```
-
-### 2.2 실행 결과
-
-```
-✅ '파이썬 공부' 할일이 추가되었습니다.
-✅ '프로젝트 완성' 할일이 추가되었습니다.
-✅ '운동하기' 할일이 추가되었습니다.
-
-[모든 할일]
-1. 파이썬 공부 - 미완료
-2. 프로젝트 완성 - 미완료
-3. 운동하기 - 미완료
-
-✅ 할일 #1이 '완료'으로 변경되었습니다.
-✅ 할일 #3이 삭제되었습니다.
-
-[완료된 할일]
-✓ 파이썬 공부
-```
-
----
-
-## 📝 Part 3: 기본 SQL 명령어 (파이썬 버전)
-
-### 3.1 CREATE (생성)
-
-```python
-# 테이블 생성
-sql = '''
-CREATE TABLE users (
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    age INTEGER,
-    email TEXT UNIQUE
-)
-'''
-cursor.execute(sql)
-```
-
-### 3.2 INSERT (삽입)
-
-```python
-# 1개 행 삽입
-sql = 'INSERT INTO users (name, age, email) VALUES (?, ?, ?)'
-cursor.execute(sql, ('김철수', 25, 'kim@email.com'))
-
-# 여러 행 삽입
-data = [
-    ('이영희', 23, 'lee@email.com'),
-    ('박민준', 26, 'park@email.com')
-]
-cursor.executemany(sql, data)
-
-conn.commit()  # 저장
-```
-
-### 3.3 SELECT (조회)
-
-```python
-# 모든 행 조회
-sql = 'SELECT * FROM users'
-cursor.execute(sql)
-results = cursor.fetchall()
-
-# 조건부 조회
-sql = 'SELECT * FROM users WHERE age > ?'
-cursor.execute(sql, (25,))
-results = cursor.fetchall()
-
-# 첫 번째 행만 조회
-cursor.execute(sql)
-first = cursor.fetchone()
-```
-
-### 3.4 UPDATE (수정)
-
-```python
-# 특정 사용자 나이 수정
-sql = 'UPDATE users SET age = ? WHERE name = ?'
-cursor.execute(sql, (26, '김철수'))
-conn.commit()
-
-print(f"수정된 행: {cursor.rowcount}개")
-```
-
-### 3.5 DELETE (삭제)
-
-```python
-# 특정 사용자 삭제
-sql = 'DELETE FROM users WHERE age < ?'
-cursor.execute(sql, (20,))
-conn.commit()
-
-print(f"삭제된 행: {cursor.rowcount}개")
-```
-
----
-
-## 🎓 Part 4: 고급 기능
-
-### 4.1 트랜잭션 처리
-
-```python
-try:
-    cursor.execute('INSERT INTO users VALUES (?, ?, ?)', ...)
-    cursor.execute('UPDATE accounts SET balance = ? WHERE id = ?', ...)
-    conn.commit()  # 모두 성공 시 저장
-    print("트랜잭션 성공")
-except Exception as e:
-    conn.rollback()  # 오류 시 취소
-    print(f"오류 발생: {e}")
-```
-
-### 4.2 데이터 검증
-
-```python
-def add_user(name, age, email):
-    # 입력 검증
-    if not name or len(name) < 2:
-        print("❌ 이름은 2글자 이상이어야 합니다.")
-        return False
-  
-    if age < 0 or age > 150:
-        print("❌ 나이는 0~150 사이여야 합니다.")
-        return False
-  
-    if '@' not in email:
-        print("❌ 유효한 이메일을 입력하세요.")
-        return False
-  
-    # 데이터베이스 저장
-    sql = 'INSERT INTO users (name, age, email) VALUES (?, ?, ?)'
-    try:
-        cursor.execute(sql, (name, age, email))
-        conn.commit()
-        print(f"✅ {name}이 추가되었습니다.")
-        return True
-    except sqlite3.IntegrityError:
-        print(f"❌ '{email}'은 이미 등록되어 있습니다.")
-        return False
-```
-
-### 4.3 조인 쿼리
-
-```python
-# 학생 테이블
-CREATE TABLE students (
-    id INTEGER PRIMARY KEY,
-    name TEXT,
-    grade INTEGER
+-- 주소록(contacts) 테이블 생성
+CREATE TABLE IF NOT EXISTS contacts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    phone VARCHAR(30) NOT NULL,
+    email VARCHAR(100),
+    memo TEXT
 );
-
-# 성적 테이블
-CREATE TABLE grades (
-    student_id INTEGER,
-    subject TEXT,
-    score INTEGER,
-    FOREIGN KEY (student_id) REFERENCES students(id)
-);
-
-# 조인 조회
-sql = '''
-SELECT s.name, g.subject, g.score
-FROM students s
-JOIN grades g ON s.id = g.student_id
-WHERE s.grade = 1
-'''
-cursor.execute(sql)
-results = cursor.fetchall()
-
-for name, subject, score in results:
-    print(f"{name}: {subject} {score}점")
 ```
 
 ---
 
-## 💡 Part 5: 실습 예제
+## 💻 Part 2: 주소록 애플리케이션
 
-### 5.1 학생 성적 관리 시스템
 
 ```python
-class StudentGradeManager:
-    def __init__(self):
-        self.conn = sqlite3.connect('grades.db')
-        self.cursor = self.conn.cursor()
-        self.setup()
-  
-    def setup(self):
-        '''테이블 생성'''
-        self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS students (
-                id INTEGER PRIMARY KEY,
-                name TEXT NOT NULL UNIQUE
-            )
-        ''')
-    
-        self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS grades (
-                id INTEGER PRIMARY KEY,
-                student_id INTEGER,
-                subject TEXT,
-                score INTEGER,
-                FOREIGN KEY (student_id) REFERENCES students(id)
-            )
-        ''')
-        self.conn.commit()
-  
-    def add_student(self, name):
-        '''학생 추가'''
-        try:
-            self.cursor.execute('INSERT INTO students (name) VALUES (?)', (name,))
-            self.conn.commit()
-            print(f"✅ {name}이 추가되었습니다.")
-        except sqlite3.IntegrityError:
-            print(f"❌ {name}은 이미 존재합니다.")
-  
-    def add_grade(self, student_name, subject, score):
-        '''성적 추가'''
-        # 학생 ID 찾기
-        self.cursor.execute('SELECT id FROM students WHERE name = ?', (student_name,))
-        result = self.cursor.fetchone()
-    
-        if not result:
-            print(f"❌ {student_name}을 찾을 수 없습니다.")
-            return
-    
-        student_id = result[0]
-        self.cursor.execute(
-            'INSERT INTO grades (student_id, subject, score) VALUES (?, ?, ?)',
-            (student_id, subject, score)
-        )
-        self.conn.commit()
-        print(f"✅ {student_name}의 {subject} 성적({score}점)이 추가되었습니다.")
-  
-    def get_average(self, student_name):
-        '''평균 성적 조회'''
-        sql = '''
-        SELECT AVG(g.score)
-        FROM students s
-        JOIN grades g ON s.id = g.student_id
-        WHERE s.name = ?
-        '''
-        self.cursor.execute(sql, (student_name,))
-        result = self.cursor.fetchone()
-        return result[0] if result[0] else 0
-  
-    def print_report(self):
-        '''성적 보고서 출력'''
-        sql = '''
-        SELECT s.name, g.subject, g.score
-        FROM students s
-        JOIN grades g ON s.id = g.student_id
-        ORDER BY s.name, g.subject
-        '''
-        self.cursor.execute(sql)
-    
-        print("\n📊 성적 보고서")
-        print("-" * 40)
-    
-        current_student = None
-        for name, subject, score in self.cursor.fetchall():
-            if name != current_student:
-                if current_student:
-                    avg = self.get_average(current_student)
-                    print(f"평균: {avg:.1f}\n")
-                print(f"\n{name}:")
-                current_student = name
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import ttk
+import pymysql
+
+# 사전 설치
+# pip install pymysql
+
+# 실행은 콘솔에서 python address_app.py 로 실행
+
+# MySQL 데이터베이스 연결 설정 (PyMySQL 사용)
+def get_db_connection():
+    return pymysql.connect(
+        host="localhost",
+        user="root",          # MySQL 사용자 이름
+        password="", # MySQL 비밀번호
+        database="address_db",
+        charset="utf8mb4"     # 한글 깨짐 방지
+    )
+
+class AddressApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("주소록 관리 프로그램 (PyMySQL + Tkinter)")
+        self.root.geometry("750x520")
+        self.root.resizable(False, False)
+
+        self.selected_id = None  # 선택된 항목의 고유 ID를 안전하게 기억하는 변수
+
+        # UI 레이아웃 구성
+        self.create_widgets()
+        # 프로그램 시작 시 데이터 목록 불러오기 (Read)
+        self.load_data()
+
+    def create_widgets(self):
+        # 1. 입력 폼 프레임
+        form_frame = tk.LabelFrame(self.root, text=" 연락처 정보 ", font=("맑은 고딕", 11, "bold"), padx=15, pady=15)
+        form_frame.pack(fill="x", padx=20, pady=10)
+
+        labels = ["이름", "전화번호", "이메일", "메모"]
+        self.entries = {}
+
+        for i, label_text in enumerate(labels):
+            lbl = tk.Label(form_frame, text=label_text, font=("맑은 고딕", 10))
+            lbl.grid(row=i, column=0, sticky="w", pady=3)
+            
+            if label_text == "메모":
+                # 메모는 여러 줄 입력 및 줄바꿈 유지를 위해 Text 위젯 사용
+                ent = tk.Text(form_frame, width=40, height=3, font=("맑은 고딕", 10))
+                ent.grid(row=i, column=1, sticky="w", pady=3)
+            else:
+                ent = tk.Entry(form_frame, width=42, font=("맑은 고딕", 10))
+                ent.grid(row=i, column=1, sticky="w", pady=3)
+            
+            self.entries[label_text] = ent
+
+        # 2. 버튼 프레임 (CRUD 기능 버튼)
+        btn_frame = tk.Frame(self.root)
+        btn_frame.pack(fill="x", padx=20, pady=5)
+
+        tk.Button(btn_frame, text="추가 (Create)", bg="#4CAF50", fg="white", width=12, font=("맑은 고딕", 10, "bold"), command=self.add_contact).pack(side="left", padx=5)
+        tk.Button(btn_frame, text="수정 (Update)", bg="#2196F3", fg="white", width=12, font=("맑은 고딕", 10, "bold"), command=self.update_contact).pack(side="left", padx=5)
+        tk.Button(btn_frame, text="삭제 (Delete)", bg="#F44336", fg="white", width=12, font=("맑은 고딕", 10, "bold"), command=self.delete_contact).pack(side="left", padx=5)
+        tk.Button(btn_frame, text="입력 초기화", bg="#9E9E9E", fg="white", width=10, font=("맑은 고딕", 10), command=self.clear_entries).pack(side="right", padx=5)
+
+        # 3. 데이터 목록 표시 프레임 (Treeview)
+        list_frame = tk.Frame(self.root)
+        list_frame.pack(fill="both", expand=True, padx=20, pady=10)
+
+        tree_scroll = tk.Scrollbar(list_frame)
+        tree_scroll.pack(side="right", fill="y")
+
+        columns = ("ID", "이름", "전화번호", "이메일")
+        self.tree = ttk.Treeview(list_frame, columns=columns, show="headings", yscrollcommand=tree_scroll.set, height=6)
         
-            print(f"  {subject}: {score}점")
+        for col in columns:
+            self.tree.heading(col, text=col)
+            self.tree.column(col, width=150, anchor="center")
+        self.tree.column("ID", width=60, anchor="center")
 
-# 사용
-manager = StudentGradeManager()
-manager.add_student('김철수')
-manager.add_student('이영희')
-manager.add_grade('김철수', '수학', 95)
-manager.add_grade('김철수', '영어', 87)
-manager.add_grade('이영희', '수학', 92)
-manager.add_grade('이영희', '영어', 90)
+        self.tree.pack(fill="both", expand=True)
+        tree_scroll.config(command=self.tree.yview)
 
-manager.print_report()
+        # 표에서 항목 선택 시 이벤트 바인딩
+        self.tree.bind("<<TreeviewSelect>>", self.on_select_item)
+
+    def clear_entries_without_id_reset(self):
+        """ID 변수는 유지한 채 입력 폼 내용만 초기화"""
+        self.entries["이름"].delete(0, "end")
+        self.entries["전화번호"].delete(0, "end")
+        self.entries["이메일"].delete(0, "end")
+        self.entries["메모"].delete("1.0", "end")
+
+    def clear_entries(self):
+        """입력 폼 및 선택된 ID 전면 초기화 (입력 초기화 버튼용)"""
+        self.selected_id = None
+        self.clear_entries_without_id_reset()
+        for item in self.tree.selection():
+            self.tree.selection_remove(item)
+
+    def load_data(self):
+        """데이터베이스로부터 목록을 불러와서 Treeview에 출력 (Read)"""
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        conn = None
+        try:
+            conn = get_db_connection()
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT id, name, phone, email FROM contacts ORDER BY id DESC")
+                rows = cursor.fetchall()
+                for row in rows:
+                    self.tree.insert("", "end", values=row)
+        except Exception as e:
+            messagebox.showerror("데이터베이스 오류", f"데이터를 불러오는 중 오류가 발생했습니다:\n{e}")
+        finally:
+            if conn:
+                conn.close()
+
+    def add_contact(self):
+        """새로운 연락처 추가 (Create)"""
+        name = self.entries["이름"].get().strip()
+        phone = self.entries["전화번호"].get().strip()
+        email = self.entries["이메일"].get().strip()
+        memo = self.entries["메모"].get("1.0", "end-1c").strip()
+
+        if not name or not phone:
+            messagebox.showwarning("경고", "이름과 전화번호는 필수 입력 항목입니다.")
+            return
+
+        conn = None
+        try:
+            conn = get_db_connection()
+            with conn.cursor() as cursor:
+                query = "INSERT INTO contacts (name, phone, email, memo) VALUES (%s, %s, %s, %s)"
+                cursor.execute(query, (name, phone, email, memo))
+            conn.commit()
+            
+            messagebox.showinfo("성공", "연락처가 추가되었습니다.")
+            self.clear_entries()
+            self.load_data()
+        except Exception as e:
+            if conn:
+                conn.rollback()
+            messagebox.showerror("오류", f"추가 중 오류 발생:\n{e}")
+        finally:
+            if conn:
+                conn.close()
+
+    def update_contact(self):
+        """선택한 항목 수정 (Update)"""
+        if self.selected_id is None:
+            messagebox.showwarning("경고", "수정할 항목을 목록에서 선택해주세요.")
+            return
+
+        name = self.entries["이름"].get().strip()
+        phone = self.entries["전화번호"].get().strip()
+        email = self.entries["이메일"].get().strip()
+        memo = self.entries["메모"].get("1.0", "end-1c").strip()
+
+        if not name or not phone:
+            messagebox.showwarning("경고", "이름과 전화번호는 필수 입력 항목입니다.")
+            return
+
+        conn = None
+        try:
+            conn = get_db_connection()
+            with conn.cursor() as cursor:
+                query = "UPDATE contacts SET name=%s, phone=%s, email=%s, memo=%s WHERE id=%s"
+                cursor.execute(query, (name, phone, email, memo, self.selected_id))
+            conn.commit()
+            
+            messagebox.showinfo("성공", "연락처가 수정되었습니다.")
+            self.clear_entries()
+            self.load_data()
+        except Exception as e:
+            if conn:
+                conn.rollback()
+            messagebox.showerror("오류", f"수정 중 오류 발생:\n{e}")
+        finally:
+            if conn:
+                conn.close()
+
+    def delete_contact(self):
+        """선택한 항목 삭제 (Delete)"""
+        if self.selected_id is None:
+            messagebox.showwarning("경고", "삭제할 항목을 목록에서 선택해주세요.")
+            return
+
+        if not messagebox.askyesno("확인", "정말 이 연락처를 삭제하시겠습니까?"):
+            return
+
+        conn = None
+        try:
+            conn = get_db_connection()
+            with conn.cursor() as cursor:
+                query = "DELETE FROM contacts WHERE id = %s"
+                cursor.execute(query, (self.selected_id,))
+            conn.commit()
+            
+            messagebox.showinfo("성공", "연락처가 삭제되었습니다.")
+            self.clear_entries()
+            self.load_data()
+        except Exception as e:
+            if conn:
+                conn.rollback()
+            messagebox.showerror("오류", f"삭제 중 오류 발생:\n{e}")
+        finally:
+            if conn:
+                conn.close()
+
+    def on_select_item(self, event):
+        """Treeview에서 행을 클릭했을 때 상단 입력 폼에 전체 데이터 채우기 (메모 줄바꿈 유지)"""
+        selected_item = self.tree.selection()
+        if not selected_item:
+            return
+
+        item_data = self.tree.item(selected_item)
+        values = item_data['values']
+        self.selected_id = values[0]  # 선택된 ID 저장
+
+        # 데이터베이스에서 해당 ID의 전체 원본 데이터(줄바꿈 포함 메모)를 다시 조회
+        conn = None
+        try:
+            conn = get_db_connection()
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT name, phone, email, memo FROM contacts WHERE id = %s", (self.selected_id,))
+                row = cursor.fetchone()
+                if row:
+                    name, phone, email, memo = row
+                    self.clear_entries_without_id_reset()
+                    self.entries["이름"].insert(0, name)
+                    self.entries["전화번호"].insert(0, phone)
+                    if email:
+                        self.entries["이메일"].insert(0, email)
+                    if memo:
+                        self.entries["메모"].insert("1.0", memo)
+        except Exception as e:
+            print(f"조회 오류: {e}")
+        finally:
+            if conn:
+                conn.close()
+
+# 프로그램 실행부
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = AddressApp(root)
+    root.mainloop()
 ```
 
----
-
-## 🔍 Part 6: 일반적인 오류와 해결
-
-### 6.1 오류 처리
-
-```python
-try:
-    cursor.execute('SELECT * FROM nonexistent_table')
-except sqlite3.OperationalError:
-    print("❌ 테이블이 존재하지 않습니다.")
-
-try:
-    cursor.execute('INSERT INTO users VALUES (?, ?, ?)', ('김철수', 25))
-    # 값이 2개인데 3개 필요
-except sqlite3.ProgrammingError:
-    print("❌ SQL 문법이 잘못되었습니다.")
-```
-
-### 6.2 주의사항
-
-```python
-# ❌ SQL 인젝션 위험 (사용 금지)
-name = "'; DROP TABLE users; --"
-sql = f"SELECT * FROM users WHERE name = '{name}'"
-
-# ✅ 안전한 방법 (사용)
-sql = "SELECT * FROM users WHERE name = ?"
-cursor.execute(sql, (name,))
-```
-
----
-
-## 📚 Part 7: 주요 함수 정리
-
-|           함수           | 설명              |
-| :----------------------: | :---------------- |
-|  `sqlite3.connect()`  | 데이터베이스 연결 |
-|   `cursor.execute()`   | SQL 한 개 실행    |
-| `cursor.executemany()` | SQL 여러 개 실행  |
-|  `cursor.fetchone()`  | 첫 번째 행 반환   |
-|  `cursor.fetchall()`  | 모든 행 반환      |
-|    `conn.commit()`    | 변경사항 저장     |
-|   `conn.rollback()`   | 변경사항 취소     |
-|     `conn.close()`     | 연결 종료         |
-|   `cursor.rowcount`   | 영향을 받은 행 수 |
-
----
-
-## 🎯 연습 문제
-
-### 1. 기본 CRUD 구현
-
-전화번호부 애플리케이션을 만드시오.
-
-- 연락처 추가 (이름, 전화번호)
-- 연락처 조회
-- 연락처 수정
-- 연락처 삭제
-
-### 2. 데이터 분석
-
-학생 성적 데이터로부터:
-
-- 과목별 평균 점수
-- 최고 점수와 최저 점수
-- 90점 이상 학생 명단
-
-### 3. 고급 기능
-
-- 검색 기능 추가
-- 정렬 기능 (이름순, 점수순)
-- 데이터 백업 기능
 
 ---
 
